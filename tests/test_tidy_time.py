@@ -26,5 +26,6 @@ def test_tidy_time_string():
             assert (date_info == (a_date, a_date_status))
         except AssertionError:
             print(f"`{string_key}` was converted to {date_info}, not {(a_date, a_date_status)} as was expected.")
+            raise AssertionError
 
     return
