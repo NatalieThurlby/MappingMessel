@@ -125,7 +125,7 @@ def tidy_time_string(time):
                     time_delta = pd.tseries.offsets.DateOffset(months=1)
                 elif re.match(r'[1,2]\d{3}', last):  # assuming it's a year
                     time_delta = pd.tseries.offsets.DateOffset(months=12)
-                elif re.match(r'\d+', last).span()[1] - re.match('\d+', last).span()[0] <= 2:  # assuming it's a day:
+                elif re.match(r'\d+', last).span()[1] - re.match(r'\d+', last).span()[0] <= 2:  # assuming it's a day:
                     time_delta = pd.tseries.offsets.DateOffset(months=0)
                 else:
                     logging.info(f"Can't guess format of {last} from {original_time_string}")
