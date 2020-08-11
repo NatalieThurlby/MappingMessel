@@ -1,6 +1,5 @@
 import pandas as pd
 import re
-import warnings
 import logging
 
 
@@ -184,26 +183,3 @@ def tidy_time_df(df, time_col, new_tidy_col='date_tidy', new_status_col='date_st
     df[new_status_col] = date_status_series
 
     return df
-
-
-def test_tidy_time_string():
-    """
-    Tests edge-cases for tidy_time_string.
-    """
-    # TODO - add more test strings (both weird and normal).
-    # TODO - write this test function
-    # TODO - run test functions through pytest/github actions
-    test_strings = {
-        '29 Feb 1957': (pd.NaT, 'not_converted'),  # There was no 29th Feb this year
-        '25-27 june': (pd.NaT, 'not_converted'),  # Pandas converts this str by default, but it has no year.
-        '03 03 1920': (pd.to_datetime('03-03-1920'), 'exact'),
-        # '1-3 March 1920': (pd.to_datetime('02-03-1920', dayfirst=True), 'centered')
-
-    }
-
-    for string_key in test_strings.keys():
-        (a_date, a_date_status) = test_strings[string_key]
-        date_info = tidy_time_string(string_key)
-        assert (date_info == (a_date, a_date_status))
-
-    return
