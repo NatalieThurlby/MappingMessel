@@ -193,6 +193,8 @@ def test_tidy_time_string():
     test_strings = {
         '29 Feb 1957': (pd.NaT, 'not_converted'),  # There was no 29th Feb this year
         '25-27 june': (pd.NaT, 'not_converted'),  # Pandas converts this str by default, but it has no year.
+        '1-3 March 1920': (pd.to_datetime('02-03-1920', dayfirst=True))
+
     }
 
     for string_key in test_strings.keys():
