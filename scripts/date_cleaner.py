@@ -1,6 +1,7 @@
 import pandas as pd
 import re
 import warnings
+import logging
 
 
 def tidy_time_string(time):
@@ -53,7 +54,7 @@ def tidy_time_string(time):
             # We don't attempt to fix multiple pairs of brackets with one missing bracket
             num_sq_brackets = time.count(']') + time.count(']')
             if num_sq_brackets >= 3 and (num_sq_brackets % 2) != 0:
-                warnings.warn("Cannot fix multiple pairs of brackets with one missing bracket.", warnings.INFO)
+                logging.info("Cannot fix multiple pairs of brackets with one missing bracket.")
                 return date, date_status
 
             reg2 = re.findall(r'\[(.*?)\]', time)
@@ -127,13 +128,14 @@ def tidy_time_string(time):
                 elif re.match(r'\d+', last).span()[1] - re.match('\d+', last).span()[0] <= 2:  # assuming it's a day:
                     time_delta = pd.tseries.offsets.DateOffset(months=0)
                 else:
-                    warnings.warn(f"Can't guess format of {last} from {original_time_string}", warnings.INFO)
+                    logging.info(f"Can't guess format of {last} from {original_time_string}")
                     return date, date_status
 
                 try:
                     last = pd.to_datetime(last)
                 except:
-                    warnings.warn(f"Could not parse `last` ({last}) into `datetime` format.", warnings.INFO)
+                    logging.info(f"Could not parse `last` ({last}) into `datetime` format.")
+
                     return date, date_status
 
                 last = last + time_delta
@@ -141,7 +143,8 @@ def tidy_time_string(time):
                 try:
                     first = pd.to_datetime(first)
                 except:
-                    print(f"Could not parse `first` ({first}) into `datetime` format.")
+                    logging.info(f"Could not parse `first` ({first}) into `datetime` format.")
+
                     return date, date_status
 
                 centre_date = first + (last - first) / 2
@@ -193,14 +196,14 @@ def test_tidy_time_string():
     test_strings = {
         '29 Feb 1957': (pd.NaT, 'not_converted'),  # There was no 29th Feb this year
         '25-27 june': (pd.NaT, 'not_converted'),  # Pandas converts this str by default, but it has no year.
-        '1-3 March 1920': (pd.to_datetime('02-03-1920', dayfirst=True))
+        '03 03 1920': (pd.to_datetime('03-03-1920'), 'exact'),
+        # '1-3 March 1920': (pd.to_datetime('02-03-1920', dayfirst=True), 'centered')
 
     }
 
     for string_key in test_strings.keys():
         (a_date, a_date_status) = test_strings[string_key]
         date_info = tidy_time_string(string_key)
-        print(date_info)
         assert (date_info == (a_date, a_date_status))
 
     return
