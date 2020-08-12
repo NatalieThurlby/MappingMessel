@@ -1,16 +1,20 @@
 import pandas as pd
 import logging
+import warnings
 
 from scripts.date_cleaner import tidy_time_string
 
 
-def test_tidy_time_string():
+def test_tidy_time_string(caplog):
     """
     Tests edge-cases for tidy_time_string.
     """
     # TODO - add more test strings (both weird and normal).
     # TODO - write this test function
     # TODO - run test functions through pytest/github actions
+
+    caplog.set_level(logging.INFO)
+
     test_strings = {
         '29 Feb 1957': (pd.NaT, 'not_converted'),  # There was no 29th Feb this year
         '25-27 june': (pd.NaT, 'not_converted'),  # Pandas converts this str by default, but it has no year.
@@ -26,6 +30,7 @@ def test_tidy_time_string():
         try:
             assert (date_info == (a_date, a_date_status))
         except AssertionError:
-            logging.warning(f"`{string_key}` was converted to {date_info}, not {(a_date, a_date_status)} as was expected.")
+            warnings.warn(f"`{string_key}` was converted to {date_info}, not {(a_date, a_date_status)} as was expected.")
+            # raise AssertionError
 
     return
